@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const userRoutes = require("./router/user");
 
 mongoose
   .connect(
@@ -26,8 +27,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res) => {
-  res.json({ message: "Voilà un message" });
-});
+app.use("/api/auth", userRoutes);
 
 module.exports = app;
