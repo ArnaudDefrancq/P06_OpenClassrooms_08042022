@@ -32,7 +32,7 @@ exports.login = (req, res, next) => {
               .json({ message: "Mot de passer incorrecte" });
           }
           res.status(200).json({
-            userId: "user._id",
+            userId: user._id,
             token: "TOKEN",
           });
         })
