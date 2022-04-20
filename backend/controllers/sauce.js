@@ -1,4 +1,5 @@
 const Sauce = require("../models/Sauces");
+const fs = require("fs");
 
 exports.getAllSauce = (req, res, next) => {
   Sauce.find()
@@ -33,6 +34,7 @@ exports.createSauce = (req, res, next) => {
     .catch((error) => res.status(400).json({ error: error }));
 };
 
+// verifier si il existe
 exports.modifySauce = (req, res, next) => {
   const sauceObject = req.file
     ? {
@@ -53,15 +55,31 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
-      if (!sauce) {
-        return res.status(404).json({ error: "Objet non trouvé" });
-      }
-      if (sauce.userId !== req.auth.userId) {
-        return res.status(401).json({ error: "Requête non autorisée" });
-      }
-      Sauce.deleteOne({ _id: req.params.id })
-        .then(() => res.status(200).json({ message: "Objet supprimé" }))
-        .catch((error) => res.status(400).json({ error }));
+      const filename = sauce.imageUrl.split("/images/")[1];
+      fs.unlink(`images/${filename}`, () => {
+        Sauce.findOneAndDelete({ _id: req.params.id })
+          .then((sauce) => {
+            if (!sauce) {
+              return res.status(404).json({ error: "Objet non trouvé" });
+            }
+            if (sauce.userId !== req.auth.userId) {
+              return res.status(401).json({ error: "Requête non autorisée" });
+            } else {
+              return res.status(200).json({ message: "Objet supprimé" });
+            }
+          })
+          .catch((error) => res.status(400).json({ error }));
+      });
     })
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => res.status(500).json({ error }));
+};
+
+// utiliser la fonction switch et faire avec les cas +1 (Ajout du like) 0 (suppréssion du like ou dislike) -1 (ajout d'un dislike).
+exports.likeSauce = (req, res, next) => {
+  let like = req.body.like;
+  let ID = req.body.userId;
+  let sauceID = req.params.id;
+  console.log(like);
+  console.log(ID);
+  console.log(sauceID);
 };
