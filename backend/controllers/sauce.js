@@ -82,4 +82,32 @@ exports.likeSauce = (req, res, next) => {
   console.log(like);
   console.log(ID);
   console.log(sauceID);
+  switch (like) {
+    case 1:
+      Sauce.findOneAndUpdate(
+        { _id: sauceID },
+        { $push: { usersLiked: ID }, $inc: { likes: +1 } }
+      )
+        .then(() => res.status(200).json({ message: `J'aime` }))
+        .catch((error) => res.status(400).json({ error }));
+      break;
+
+    case 0:
+      Sauce.findOneAndUpdate({ _id: sauceID })
+        .then((sauce) => {})
+        .catch((error) => res.status(400).json({ error }));
+      break;
+
+    case -1:
+      Sauce.findOneAndUpdate(
+        { _id: sauceID },
+        { $push: { usersDisliked: ID }, $inc: { dislikes: +1 } }
+      )
+        .then(() => res.status(200).json({ message: `Je n'aime pas` }))
+        .catch((error) => res.status(400).json({ error }));
+      break;
+
+    default:
+      console.log("error");
+  }
 };
