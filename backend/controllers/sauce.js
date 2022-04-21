@@ -34,7 +34,6 @@ exports.createSauce = (req, res, next) => {
     .catch((error) => res.status(400).json({ error: error }));
 };
 
-// verifier si il existe
 exports.modifySauce = (req, res, next) => {
   const sauceObject = req.file
     ? {
@@ -79,11 +78,6 @@ exports.likeSauce = (req, res, next) => {
   let like = req.body.like;
   let ID = req.body.userId;
   let sauceID = req.params.id;
-
-  console.log(like);
-  console.log(ID);
-  console.log(sauceID);
-
   switch (like) {
     case 1:
       Sauce.findOneAndUpdate(
