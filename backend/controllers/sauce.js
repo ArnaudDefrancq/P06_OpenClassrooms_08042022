@@ -79,9 +79,11 @@ exports.likeSauce = (req, res, next) => {
   let like = req.body.like;
   let ID = req.body.userId;
   let sauceID = req.params.id;
+
   console.log(like);
   console.log(ID);
   console.log(sauceID);
+
   switch (like) {
     case 1:
       Sauce.findOneAndUpdate(
@@ -93,8 +95,26 @@ exports.likeSauce = (req, res, next) => {
       break;
 
     case 0:
-      Sauce.findOneAndUpdate({ _id: sauceID })
-        .then((sauce) => {})
+      Sauce.findOne({ _id: sauceID })
+        .then((sauce) => {
+          if (sauce.usersLiked.includes(ID)) {
+            Sauce.updateOne(
+              { _id: sauceID },
+              { $pull: { usersLiked: ID }, $inc: { likes: -1 } }
+            )
+              .then(() => res.status(200).json({ message: "Neutre" }))
+              .catch((error) => res.status(400).json({ error }));
+          }
+          if (sauce.usersDisliked.includes(ID)) {
+            Sauce.updateOne(
+              { _id: sauceID },
+              { $pull: { usersDisliked: ID }, $inc: { dislikes: -1 } }
+            )
+              .then(() => res.status(200).json({ message: "Neutre" }))
+              .catch((error) => res.status(400).json({ error }));
+          }
+        })
+
         .catch((error) => res.status(400).json({ error }));
       break;
 
