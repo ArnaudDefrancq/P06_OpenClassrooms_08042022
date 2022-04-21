@@ -3,14 +3,8 @@ const mongoose = require("mongoose");
 const userRoutes = require("./router/user");
 const sauceRoutes = require("./router/sauce");
 const path = require("path");
-
-mongoose
-  .connect(
-    "mongodb+srv://arnaud:hercules55@cluster0.ek3m7.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
-  .then(() => console.log("Connexion à MongoDB réussie !"))
-  .catch(() => console.log("Connexion à MongoDB échouée !"));
+require("dotenv").config({ path: "./config/.env" });
+require("./config/db");
 
 const app = express();
 
