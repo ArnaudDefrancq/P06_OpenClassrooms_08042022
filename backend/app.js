@@ -5,8 +5,17 @@ const sauceRoutes = require("./router/sauce");
 const path = require("path");
 require("dotenv").config({ path: "./config/.env" });
 require("./config/db");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
+
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "Too many request from this IP",
+});
+
+app.use(limiter);
 
 app.use(express.json());
 
@@ -21,6 +30,13 @@ app.use((req, res, next) => {
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );
   next();
+});
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Hello from the express server",
+  });
 });
 
 app.use("/api/auth", userRoutes);
