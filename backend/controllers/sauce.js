@@ -43,11 +43,17 @@ exports.modifySauce = (req, res, next) => {
         }`,
       }
     : { ...req.body };
-  Sauce.updateOne(
+  Sauce.findOneAndUpdate(
     { _id: req.params.id },
     { ...sauceObject, _id: req.params.id }
   )
-    .then(() => res.status(200).json({ message: "Objet modifié" }))
+    .then((sauce) => {
+      if (sauce.userId !== req.auth.userId) {
+        return res.status(401).json({ error: "Requête non autorisée" });
+      } else {
+        return res.status(200).json({ message: "Objet modifié" });
+      }
+    })
     .catch((error) => res.status(400).json({ error }));
 };
 
@@ -73,7 +79,6 @@ exports.deleteSauce = (req, res, next) => {
     .catch((error) => res.status(500).json({ error }));
 };
 
-// utiliser la fonction switch et faire avec les cas +1 (Ajout du like) 0 (suppréssion du like ou dislike) -1 (ajout d'un dislike).
 exports.likeSauce = (req, res, next) => {
   let like = req.body.like;
   let ID = req.body.userId;
